@@ -1,4 +1,4 @@
-package com.api.myfavgames.models;
+package com.api.myfavgames.modules.user.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
