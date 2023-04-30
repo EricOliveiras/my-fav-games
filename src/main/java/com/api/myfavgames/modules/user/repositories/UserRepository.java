@@ -1,12 +1,10 @@
-package com.api.myfavgames.repositories;
+package com.api.myfavgames.modules.user.repositories;
 
-import com.api.myfavgames.models.UserModel;
+import com.api.myfavgames.modules.user.models.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-@Repository
 public interface UserRepository extends JpaRepository<UserModel, UUID> {
   boolean existsByEmail(String email);
   UserModel getByEmail(String email);
