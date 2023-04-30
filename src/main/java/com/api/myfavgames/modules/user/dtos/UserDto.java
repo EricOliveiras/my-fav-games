@@ -1,4 +1,4 @@
-package com.api.myfavgames.dtos;
+package com.api.myfavgames.modules.user.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
