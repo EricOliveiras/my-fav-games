@@ -27,6 +27,8 @@ public class UserModel {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    public UserModel() {}
+
     public UUID getId() {
         return id;
     }
