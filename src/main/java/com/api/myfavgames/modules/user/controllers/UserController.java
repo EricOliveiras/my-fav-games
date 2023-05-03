@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,156 +23,153 @@ import java.util.UUID;
 @RequestMapping("/myfavgames")
 @Tag(name = "API", description = "API to manager users")
 public class UserController {
-    final UserService userService;
+	@Autowired
+    private UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+	@Operation(
+		summary = "Store a user",
+		operationId = "storeUser",
+		responses = {
+			@ApiResponse(
+				responseCode = "201",
+				description = "User created",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = UserResponse.class)
+					)
+				}
+			),
+			@ApiResponse(
+				responseCode = "409",
+				description = "User already exist",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = ErrorResponse.class)
+				)
+			),
+		}
+	)
+	@PostMapping("/user")
+	public ResponseEntity<Object> storeUser(@RequestBody @Valid UserDto userDto) {
+			return userService.store(userDto);
+	}
 
-    @Operation(
-			summary = "Store a user",
-			operationId = "storeUser",
-			responses = {
-				@ApiResponse(
-					responseCode = "201",
-					description = "User created",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = UserResponse.class)
-						)
-					}
-				),
-				@ApiResponse(
-					responseCode = "409",
-					description = "User already exist",
-					content = @Content(
+	@Operation(
+		summary = "List all users",
+		operationId = "listUsers",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "Users found",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = UserResponse.class)
+					)   
+				}
+			)
+		}
+	)
+	@GetMapping("/user")
+	public ResponseEntity<List<UserModel>> findAll() {
+		return userService.findAll();
+	}
+
+	@Operation(
+		summary = "Get a user by id",
+		operationId = "getUser",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "User found",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = UserResponse.class)
+					)
+				}
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "User not found",
+				content = {
+					@Content(
 						mediaType = "application/json",
 						schema = @Schema(implementation = ErrorResponse.class)
 					)
-				),
-			}
-    )
-    @PostMapping("/user")
-    public ResponseEntity<Object> storeUser(@RequestBody @Valid UserDto userDto) {
-        return userService.store(userDto);
-    }
+				}
+			)
+		}
+	)
+	@GetMapping("/user/{id}")
+	public ResponseEntity<Object> findOne(@PathVariable UUID id) {
+		return userService.findOne(id);
+	}
 
-    @Operation(
-			summary = "List all users",
-			operationId = "listUsers",
-			responses = {
-				@ApiResponse(
-					responseCode = "200",
-					description = "Users found",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = UserResponse.class)
-						)   
-					}
-				)
-			}
-    )
-    @GetMapping("/user")
-    public ResponseEntity<List<UserModel>> findAll() {
-			return userService.findAll();
-    }
+	@Operation(
+		summary = "Update a user",
+		operationId = "updateUser",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "User updated successfully",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = UserResponse.class)
+					)
+				}
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "User not found",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			),
+			@ApiResponse(
+				responseCode = "400",
+				description = "Unable to update email",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			)
+		}
+	)
+	@PutMapping("/user/{id}")
+	public ResponseEntity<Object> update(@RequestBody @Valid UserDto userDto, @PathVariable UUID id) {
+		return userService.updateUser(userDto, id);
+	}
 
-    @Operation(
-			summary = "Get a user by id",
-			operationId = "getUser",
-			responses = {
-				@ApiResponse(
-					responseCode = "200",
-					description = "User found",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = UserResponse.class)
-						)
-					}
-				),
-				@ApiResponse(
-					responseCode = "404",
-					description = "User not found",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = ErrorResponse.class)
-						)
-					}
-				)
-			}
-		)
-    @GetMapping("/user/{id}")
-    public ResponseEntity<Object> findOne(@PathVariable UUID id) {
-			return userService.findOne(id);
-    }
-
-    @Operation(
-			summary = "Update a user",
-			operationId = "updateUser",
-			responses = {
-				@ApiResponse(
-					responseCode = "200",
-					description = "User updated successfully",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = UserResponse.class)
-						)
-					}
-				),
-				@ApiResponse(
-					responseCode = "404",
-					description = "User not found",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = ErrorResponse.class)
-						)
-					}
-				),
-				@ApiResponse(
-					responseCode = "400",
-					description = "Unable to update email",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = ErrorResponse.class)
-						)
-					}
-				)
-			}
-		)
-    @PutMapping("/user/{id}")
-    public ResponseEntity<Object> update(@RequestBody @Valid UserDto userDto, @PathVariable UUID id) {
-			return userService.updateUser(userDto, id);
-    }
-
-    @Operation(
-			summary = "Delet a user",
-			operationId = "deleteUser",
-			responses = {
-				@ApiResponse(
-					responseCode = "200",
-					description = "User deleted successfully"
-				),
-				@ApiResponse(
-					responseCode = "404",
-					description = "User not found",
-					content = {
-						@Content(
-							mediaType = "application/json",
-							schema = @Schema(implementation = ErrorResponse.class)
-						)
-					}
-				)
-			}
-		)
-    @DeleteMapping("/user/{id}")
-    public ResponseEntity<Object> delete(@PathVariable UUID id) {
-			return userService.delete(id);
-    }
+	@Operation(
+		summary = "Delet a user",
+		operationId = "deleteUser",
+		responses = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "User deleted successfully"
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description = "User not found",
+				content = {
+					@Content(
+						mediaType = "application/json",
+						schema = @Schema(implementation = ErrorResponse.class)
+					)
+				}
+			)
+		}
+	)
+	@DeleteMapping("/user/{id}")
+	public ResponseEntity<Object> delete(@PathVariable UUID id) {
+		return userService.delete(id);
+	}
 }
